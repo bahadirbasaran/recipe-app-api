@@ -1,0 +1,15 @@
+version: "3"
+
+services:
+    app:
+        build:
+            # For the service named "app", set the context as the current directory.
+            context: .
+        ports:
+            # Map the host port 8000 to Docker image port 8000.
+            - "8000:8000"
+        volumes:
+            # Map the app directory to /app directory in the Docker image. Changes in the local app directory will be automatically updated in the container.
+            - ./app:/app
+        command: >
+            sh -c "python manage.py runserver 0.0.0.0:8000"
