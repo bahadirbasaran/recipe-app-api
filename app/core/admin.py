@@ -27,5 +27,7 @@ class UserAdmin(BaseUserAdmin):
         }),
     )
 
-
+# Django-admin rovides a web interface for performing CRUD actions on models
+# by default. In case of adding new/custom models like the User model here,
+# they should be registered to be accessible thorough the admin site.
 admin.site.register(models.User, UserAdmin)
