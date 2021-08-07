@@ -9,7 +9,31 @@ services:
             # Map the host port 8000 to Docker image port 8000.
             - "8000:8000"
         volumes:
-            # Map the app directory to /app directory in the Docker image. Changes in the local app directory will be automatically updated in the container.
+            # Map the app directory to /app directory in the Docker image. Changes in
+            # the local app directory will be automatically updated in the container.
             - ./app:/app
-        command: >
-            sh -c "python manage.py runserver 0.0.0.0:8000"
+        command: 
+            # Waiting for a database connection, then database migration to create any
+            # data (table etc.) that are required for the app, and then running the app. 
+            >
+            sh -c "python manage.py wait_for_db &&
+                   python manage.py migrate &&
+                   python manage.py runserver 0.0.0.0:8000"
+        environment:
+            # DB_HOST should match with the name of the service that runs the database.
+            - DB_HOST=db
+            - DB_NAME=app
+            - DB_USER=postgres
+            - DB_PASS=pw-recipe-app-api
+        depends_on:
+            # The service app depends on the service db. The service db starts before the app.
+            # The service dp will be available via the network when using the host name db.
+            - db
+
+    db:
+        image:
+            postgres:13-alpine
+        environment:
+            - POSTGRES_DB=app
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=pw-recipe-app-api
