@@ -62,9 +62,8 @@ class ModelTests(TestCase):
         self.assertTrue(user.is_superuser)
         self.assertTrue(user.is_staff)
 
-    def test_tag_creation(self):
-        """Tests tag string representation. This function creates a tag, and
-        verifies that it converts to the correct string representation."""
+    def test_tag_str_representation(self):
+        """Creates a tag, verifies correctness of its string representation."""
 
         credentials = {'email': 'testuser@gmail.com', 'password': 'Testpass12'}
         user = get_user_model().objects.create_user(**credentials)
