@@ -32,3 +32,4 @@ class UserAdmin(BaseUserAdmin):
 # by default. In case of adding new/custom models like the User model here,
 # they should be registered to be accessible thorough the admin site.
 admin.site.register(models.User, UserAdmin)
+admin.site.register(models.Tag)

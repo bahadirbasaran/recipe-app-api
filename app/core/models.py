@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, \
                                        PermissionsMixin
 
@@ -42,3 +43,20 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
+
+
+class Tag(models.Model):
+    """Defines tags to be used in recipes."""
+
+    name = models.CharField(max_length=255)
+
+    # models.CASCADE ensures deletion of the tag when User is deleted.
+    user = models.ForeignKey(
+        to=settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+
+    def __str__(self):
+        """Defines the string representation of model."""
+
+        return self.name

@@ -4,6 +4,8 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
+from core import models
+
 
 class ModelTests(TestCase):
 
@@ -59,3 +61,17 @@ class ModelTests(TestCase):
         # The field is_superuser is inherited from PermissionsMixin.
         self.assertTrue(user.is_superuser)
         self.assertTrue(user.is_staff)
+
+    def test_tag_creation(self):
+        """Tests tag string representation. This function creates a tag, and
+        verifies that it converts to the correct string representation."""
+
+        credentials = {'email': 'testuser@gmail.com', 'password': 'Testpass12'}
+        user = get_user_model().objects.create_user(**credentials)
+
+        tag = models.Tag.objects.create(
+            user=user,
+            name='Vegan'
+        )
+
+        self.assertEqual(str(tag), tag.name)
