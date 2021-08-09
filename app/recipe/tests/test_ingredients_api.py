@@ -85,3 +85,23 @@ class PrivateIngredientsApiTests(TestCase):
         # Check that the name of the returned ingredient matches with the
         # name of the ingredient that was assigned to the authenticated user.
         self.assertEqual(response.data[0]['name'], ingredient.name)
+
+    def test_create_ingredient(self):
+        """Tests new ingredient creation."""
+
+        ingredient_payload = {'name': 'Test Ingredient'}
+        self.client.post(URL_INGREDIENTS, ingredient_payload)
+
+        is_ingredient_created = Ingredient.objects.filter(
+            user=self.user,
+            name=ingredient_payload['name']
+        ).exists()
+        self.assertTrue(is_ingredient_created)
+
+    def test_create_ingredient_invalid_payload(self):
+        """Tests creating a new ingredient with invalid payload."""
+
+        ingredient_payload = {'name': ''}
+        response = self.client.post(URL_INGREDIENTS, ingredient_payload)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
