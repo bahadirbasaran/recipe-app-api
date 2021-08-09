@@ -9,6 +9,7 @@ from core.models import Tag
 
 from recipe.serializers import TagSerializer
 
+
 URL_TAGS = reverse('recipe:tag-list')
 
 
@@ -47,7 +48,7 @@ class PrivateTagsApiTests(TestCase):
         # Retrieve the tags belonging to the authenticated user.
         response = self.client.get(URL_TAGS)
 
-        # Ensure tags are returned in alphabetic&reversed order based on name.
+        # Ensure tags are returned in reversed order based on name.
         tags = Tag.objects.all().order_by('-name')
 
         # Create a tag serializer allowing more than one items.
@@ -57,9 +58,7 @@ class PrivateTagsApiTests(TestCase):
         self.assertEqual(response.data, serializer.data)
 
     def test_tags_limited_to_authenticated_user(self):
-        """Tests that retrieved tags are limited just to the
-        user that is logged in. The goal is to see only tags
-        that are assigned to authenticated user."""
+        """Tests that retrieved tags are limited to authenticated users."""
 
         # Create a new user addition to the user created in
         # setup, and leave it without an authentication.

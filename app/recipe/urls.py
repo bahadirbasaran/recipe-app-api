@@ -9,8 +9,9 @@ from recipe import views
 # URLs for all actions in ViewSet
 router = DefaultRouter()
 
-# Register the TagViewSet with the router
+# Register the TagViewSet and IngredientViewSet with the router
 router.register('tags', views.TagViewSet)
+router.register('ingredients', views.IngredientViewSet)
 
 app_name = 'recipe'
 

@@ -57,6 +57,23 @@ class Tag(models.Model):
     )
 
     def __str__(self):
-        """Defines the string representation of model."""
+        """Defines the string representation of the model."""
+
+        return self.name
+
+
+class Ingredient(models.Model):
+    """Defines ingredients to be used in recipes."""
+
+    name = models.CharField(max_length=255)
+
+    # models.CASCADE ensures deletion of the tag when User is deleted.
+    user = models.ForeignKey(
+        to=settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+
+    def __str__(self):
+        """Defines the string representation of the model."""
 
         return self.name

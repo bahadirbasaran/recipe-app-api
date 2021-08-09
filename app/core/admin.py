@@ -33,3 +33,4 @@ class UserAdmin(BaseUserAdmin):
 # they should be registered to be accessible thorough the admin site.
 admin.site.register(models.User, UserAdmin)
 admin.site.register(models.Tag)
+admin.site.register(models.Ingredient)

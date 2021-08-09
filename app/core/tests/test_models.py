@@ -19,9 +19,7 @@ class ModelTests(TestCase):
             email=email,
             password=password
         )
-
         self.assertEqual(user.email, email)
-
         # Passwords cannot be directly compared because of encryption.
         self.assertTrue(user.check_password(password))
 
@@ -34,7 +32,6 @@ class ModelTests(TestCase):
             email=email,
             password='Testpass123'
         )
-
         self.assertEqual(user.email, email.lower())
 
     def test_new_user_invalid_email(self):
@@ -57,13 +54,12 @@ class ModelTests(TestCase):
             email=email,
             password=password
         )
-
         # The field is_superuser is inherited from PermissionsMixin.
         self.assertTrue(user.is_superuser)
         self.assertTrue(user.is_staff)
 
     def test_tag_str_representation(self):
-        """Creates a tag, verifies correctness of its string representation."""
+        """Creates a tag, checks its string representation."""
 
         credentials = {'email': 'testuser@gmail.com', 'password': 'Testpass12'}
         user = get_user_model().objects.create_user(**credentials)
@@ -72,5 +68,16 @@ class ModelTests(TestCase):
             user=user,
             name='Vegan'
         )
-
         self.assertEqual(str(tag), tag.name)
+
+    def test_ingredients_str_representation(self):
+        """Creates an ingredient, checks its string representation."""
+
+        credentials = {'email': 'testuser@gmail.com', 'password': 'Testpass12'}
+        user = get_user_model().objects.create_user(**credentials)
+
+        ingredient = models.Ingredient.objects.create(
+            user=user,
+            name='Cucumber'
+        )
+        self.assertEqual(str(ingredient), ingredient.name)
