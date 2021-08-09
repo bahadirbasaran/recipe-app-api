@@ -72,6 +72,8 @@ class PublicUserApiTests(TestCase):
         ).exists()
         self.assertFalse(is_user_created)
 
+        self.assertEqual(response.data['password'][0].code, 'min_length')
+
     def test_create_token_for_user(self):
         """Tests that a token is created for a registered user"""
 
