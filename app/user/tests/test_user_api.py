@@ -12,7 +12,7 @@ URL_ME = reverse('user:me')
 
 
 class PublicUserApiTests(TestCase):
-    """Tests API requests that do not require authentication."""
+    """Tests for unauthenticated User API accesses."""
 
     def setUp(self):
         """SetUp function is run before every test."""
@@ -130,7 +130,7 @@ class PublicUserApiTests(TestCase):
 
 
 class PrivateUserApiTests(TestCase):
-    """Tests API requests that require authentication."""
+    """Tests for authenticated User API accesses."""
 
     def setUp(self):
         """SetUp function is run before every test."""

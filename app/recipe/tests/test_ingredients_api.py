@@ -14,7 +14,7 @@ URL_INGREDIENTS = reverse('recipe:ingredient-list')
 
 
 class PublicIngredientsApiTests(TestCase):
-    """API tests for publicly available ingredients."""
+    """Tests for unauthenticated Ingredients API accesses."""
 
     def setUp(self):
         """SetUp function is run before every test."""
@@ -31,7 +31,7 @@ class PublicIngredientsApiTests(TestCase):
 
 
 class PrivateIngredientsApiTests(TestCase):
-    """API tests for available ingredients to authorized users."""
+    """Tests for authenticated Ingredients API accesses."""
 
     def setUp(self):
         """SetUp function is run before every test."""
@@ -50,6 +50,7 @@ class PrivateIngredientsApiTests(TestCase):
         # Retrieve the ingredients belonging to user.
         response = self.client.get(URL_INGREDIENTS)
 
+        # Retrieve ingredients from the database.
         # Ensure ingredients are returned in reversed order based on name.
         ingredients = Ingredient.objects.all().order_by('-name')
 

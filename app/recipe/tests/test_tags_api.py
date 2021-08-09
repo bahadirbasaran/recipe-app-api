@@ -14,7 +14,7 @@ URL_TAGS = reverse('recipe:tag-list')
 
 
 class PublicTagsApiTests(TestCase):
-    """API tests for publicly available tags."""
+    """Tests for unauthenticated Tag API accesses."""
 
     def setUp(self):
         """SetUp function is run before every test."""
@@ -29,7 +29,7 @@ class PublicTagsApiTests(TestCase):
 
 
 class PrivateTagsApiTests(TestCase):
-    """API tests for available tags to authorized users."""
+    """Tests for authenticated Tag API accesses."""
 
     def setUp(self):
         """SetUp function is run before every test."""
@@ -48,6 +48,7 @@ class PrivateTagsApiTests(TestCase):
         # Retrieve the tags belonging to the authenticated user.
         response = self.client.get(URL_TAGS)
 
+        # Retrieve tags from the database.
         # Ensure tags are returned in reversed order based on name.
         tags = Tag.objects.all().order_by('-name')
 
