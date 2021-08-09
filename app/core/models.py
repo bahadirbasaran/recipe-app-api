@@ -67,7 +67,7 @@ class Ingredient(models.Model):
 
     name = models.CharField(max_length=255)
 
-    # models.CASCADE ensures deletion of the tag when User is deleted.
+    # models.CASCADE ensures deletion of the ingredient when User is deleted.
     user = models.ForeignKey(
         to=settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE
@@ -77,3 +77,30 @@ class Ingredient(models.Model):
         """Defines the string representation of the model."""
 
         return self.name
+
+
+class Recipe(models.Model):
+    """Defines recipe objects."""
+
+    title = models.CharField(max_length=255)
+    time_minutes = models.IntegerField()
+    price = models.DecimalField(max_digits=5, decimal_places=2)
+
+    # Set link as an optional field for recipes.
+    link = models.CharField(max_length=255, blank=True)
+
+    # Many ingredients and many tags can be assigned to many recipes.
+    ingredients = models.ManyToManyField('Ingredient')
+    tags = models.ManyToManyField('Tag')
+
+    # A recipe can be assigned to only one user.
+    # models.CASCADE ensures deletion of the tag when User is deleted.
+    user = models.ForeignKey(
+        to=settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+
+    def __str__(self):
+        """Defines the string representation of the model."""
+
+        return self.title
