@@ -18,6 +18,7 @@ The capabilities of this API, which was developed by following the Test-driven D
 
 macOS and Windows users can install Docker Desktop which contains both Docker and Docker-Compose tools.
 Linux users need to follow the instructions on Get Docker CE for Ubuntu and then Install Docker Compose separately.
+
 You are good to go if you can successfully run:
 ```sh
 docker-compose --version
