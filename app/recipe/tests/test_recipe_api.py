@@ -1,3 +1,8 @@
+import os
+import tempfile
+
+from PIL import Image
+
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.test import TestCase
@@ -13,8 +18,14 @@ from recipe.serializers import RecipeSerializer, RecipeDetailSerializer
 URL_RECIPES = reverse('recipe:recipe-list')
 
 
+def get_image_upload_url(recipe_id):
+    """Helper function to return recipe image upload URL."""
+
+    return reverse('recipe:recipe-upload-image', args=[recipe_id])
+
+
 def get_detail_url(recipe_id):
-    """Helper function to return recipe detail URL"""
+    """Helper function to return recipe detail URL."""
 
     return reverse('recipe:recipe-detail', args=[recipe_id])
 
@@ -46,7 +57,7 @@ def create_sample_recipe(user, **parameters):
 
 
 class PublicRecipeApiTests(TestCase):
-    """Tests for unauthenticated Recipe API accesses."""
+    """Tests for unauthenticated recipe API accesses."""
 
     def setUp(self):
         """SetUp function is run before every test."""
@@ -63,7 +74,7 @@ class PublicRecipeApiTests(TestCase):
 
 
 class PrivateRecipeApiTests(TestCase):
-    """Tests for authenticated Recipe API accesses."""
+    """Tests for authenticated recipe API accesses."""
 
     def setUp(self):
         """SetUp function is run before every test."""
@@ -270,3 +281,57 @@ class PrivateRecipeApiTests(TestCase):
         # field if the field is omitted (there is no tag in recipe_payload).
         tags = recipe.tags.all()
         self.assertEqual(len(tags), 0)
+
+
+class RecipeImageUploadApiTests(TestCase):
+    """Tests for recipe image upload API accesses."""
+
+    def setUp(self):
+        """SetUp function is run before every test."""
+
+        credentials = {'email': 'testuser@gmail.com', 'password': 'Testpass12'}
+        self.user = get_user_model().objects.create_user(**credentials)
+        self.client = APIClient()
+        self.client.force_authenticate(self.user)
+        self.recipe = create_sample_recipe(user=self.user)
+
+    def tearDown(self):
+        """tearDown function is run after every test."""
+
+        self.recipe.image.delete()
+
+    def test_upload_image_to_recipe(self):
+        """Tests uploading image to recipes."""
+
+        url = get_image_upload_url(self.recipe.id)
+
+        # Create a named temporary file.
+        with tempfile.NamedTemporaryFile(suffix='.jpg') as ntf:
+            img = Image.new(mode='RGB', size=(10, 10))
+            img.save(fp=ntf, format='JPEG')
+
+            # Set the file pointer to the beginning of the image.
+            ntf.seek(0)
+
+            response = self.client.post(
+                url,
+                {'image': ntf},
+                format='multipart'
+            )
+
+        # Refresh the details of the recipe from database.
+        self.recipe.refresh_from_db()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('image', response.data)
+        self.assertTrue(os.path.exists(self.recipe.image.path))
+
+    def test_upload_image_to_recipe_bad_request(self):
+        """Tests uploading invalid image to recipes."""
+
+        url = get_image_upload_url(self.recipe.id)
+
+        # Pass a string instead of an image.
+        response = self.client.post(url, {'image': 'img'}, format='multipart')
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

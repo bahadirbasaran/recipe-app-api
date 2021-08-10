@@ -41,7 +41,7 @@ RUN adduser -D user
 # Change the ownership of all directories within the vol to the custom user.
 RUN chown -R user:user /vol/
 
-# Give owner full permission, the rest can read and execute.
-RUN chown -R 755 /vol/web
+# Set permissions so that user can read, write, and execute.
+RUN chmod -R 755 /vol/web
 
 USER user
