@@ -68,3 +68,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return serializers.RecipeDetailSerializer
 
         return self.serializer_class
+
+    def perform_create(self, serializer):
+        """Overrides the default creation to set user to authenticated user."""
+
+        serializer.save(user=self.request.user)
