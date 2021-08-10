@@ -48,3 +48,11 @@ class RecipeSerializer(serializers.ModelSerializer):
             'time_minutes', 'price', 'link'
         )
         read_only_fields = ('id',)
+
+
+class RecipeDetailSerializer(RecipeSerializer):
+    """Serializer for recipe details."""
+
+    # Override only the ingredients and tags.
+    ingredients = IngredientSerializer(many=True, read_only=True)
+    tags = TagSerializer(many=True, read_only=True)

@@ -5,15 +5,33 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from core.models import Recipe
+from core.models import Recipe, Tag, Ingredient
 
-from recipe.serializers import RecipeSerializer
+from recipe.serializers import RecipeSerializer, RecipeDetailSerializer
 
 
 URL_RECIPES = reverse('recipe:recipe-list')
 
 
-def sample_recipe(user, **parameters):
+def get_detail_url(recipe_id):
+    """Helper function to return recipe detail URL"""
+
+    return reverse('recipe:recipe-detail', args=[recipe_id])
+
+
+def create_sample_tag(user, name='Main Course'):
+    """Helper function to create and return a sample tag."""
+
+    return Tag.objects.create(user=user, name=name)
+
+
+def create_sample_ingredient(user, name='Cinnamon'):
+    """Helper function to create and return a sample ingredient."""
+
+    return Ingredient.objects.create(user=user, name=name)
+
+
+def create_sample_recipe(user, **parameters):
     """Helper function to create and return a sample recipe."""
 
     default_parameters = {
@@ -58,9 +76,9 @@ class PrivateRecipeApiTests(TestCase):
     def test_retrieve_recipes(self):
         """Tests retrieving a list of recipes."""
 
-        # Create two recipes.
-        sample_recipe(user=self.user)
-        sample_recipe(user=self.user)
+        # Create two sample recipes.
+        create_sample_recipe(user=self.user)
+        create_sample_recipe(user=self.user)
 
         # Retrieve the recipes belonging to user.
         response = self.client.get(URL_RECIPES)
@@ -83,11 +101,11 @@ class PrivateRecipeApiTests(TestCase):
         credentials = {'email': 'newuser@gmail.com', 'password': 'Testpass34'}
         new_user = get_user_model().objects.create_user(**credentials)
 
-        # Create a recipe that is assigned to the new user.
-        sample_recipe(user=new_user)
+        # Create a sample recipe that is assigned to the new user.
+        create_sample_recipe(user=new_user)
 
-        # Create a recipe that is assigned to the authenticated user.
-        sample_recipe(user=self.user)
+        # Create a sample recipe that is assigned to the authenticated user.
+        create_sample_recipe(user=self.user)
 
         response = self.client.get(URL_RECIPES)
 
@@ -104,4 +122,21 @@ class PrivateRecipeApiTests(TestCase):
         self.assertEqual(len(response.data), 1)
 
         # Check that the data returned is the same as the serializer.
+        self.assertEqual(response.data, serializer.data)
+
+    def test_view_recipe_detail(self):
+        """Tests viewing a recipe detail."""
+
+        recipe = create_sample_recipe(user=self.user)
+        tag = create_sample_tag(user=self.user)
+        ingredient = create_sample_ingredient(user=self.user)
+
+        recipe.tags.add(tag)
+        recipe.ingredients.add(ingredient)
+
+        url = get_detail_url(recipe.id)
+        response = self.client.get(url)
+
+        serializer = RecipeDetailSerializer(recipe)
+
         self.assertEqual(response.data, serializer.data)
