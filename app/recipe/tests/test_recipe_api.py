@@ -335,3 +335,63 @@ class RecipeImageUploadApiTests(TestCase):
         response = self.client.post(url, {'image': 'img'}, format='multipart')
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_filter_recipes_by_tags(self):
+        """Tests filtering recipes by specific tags."""
+
+        # Create sample recipes and tags.
+        recipe1 = create_sample_recipe(user=self.user, title='Thai Curry')
+        recipe2 = create_sample_recipe(user=self.user, title='Lime Cheesecake')
+        recipe3 = create_sample_recipe(user=self.user, title='Fish and Chips')
+
+        # Create sample tags.
+        tag1 = create_sample_tag(user=self.user, name='Vegan')
+        tag2 = create_sample_tag(user=self.user, name='Dessert')
+
+        # Add the tags onto the recipes.
+        recipe1.tags.add(tag1)
+        recipe2.tags.add(tag2)
+
+        # Respons should only include the first two recipes.
+        response = self.client.get(
+            URL_RECIPES,
+            {'tags': f'{tag1.id},{tag2.id}'}
+        )
+
+        serializer1 = RecipeSerializer(recipe1)
+        serializer2 = RecipeSerializer(recipe2)
+        serializer3 = RecipeSerializer(recipe3)
+
+        self.assertIn(serializer1.data, response.data)
+        self.assertIn(serializer2.data, response.data)
+        self.assertNotIn(serializer3.data, response.data)
+
+    def test_filter_recipes_by_ingredients(self):
+        """Tests filtering recipes by specific ingredients."""
+
+        # Create sample recipes.
+        recipe1 = create_sample_recipe(user=self.user, title='Pasta Bolognese')
+        recipe2 = create_sample_recipe(user=self.user, title='Kiwi Cheesecake')
+        recipe3 = create_sample_recipe(user=self.user, title='Steak&Mushrooms')
+
+        # Create sample ingredients.
+        ingredient1 = create_sample_ingredient(user=self.user, name='Tomato')
+        ingredient2 = create_sample_ingredient(user=self.user, name='Kiwi')
+
+        # Add the ingredients to the recipes.
+        recipe1.ingredients.add(ingredient1)
+        recipe2.ingredients.add(ingredient2)
+
+        # Respons should only include the first two recipes.
+        response = self.client.get(
+            URL_RECIPES,
+            {'ingredients': f'{ingredient1.id},{ingredient2.id}'}
+        )
+
+        serializer1 = RecipeSerializer(recipe1)
+        serializer2 = RecipeSerializer(recipe2)
+        serializer3 = RecipeSerializer(recipe3)
+
+        self.assertIn(serializer1.data, response.data)
+        self.assertIn(serializer2.data, response.data)
+        self.assertNotIn(serializer3.data, response.data)
