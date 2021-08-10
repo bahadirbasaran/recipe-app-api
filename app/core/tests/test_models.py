@@ -4,6 +4,8 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
+from unittest.mock import patch
+
 from core import models
 
 
@@ -95,3 +97,23 @@ class ModelTests(TestCase):
             price=5.00
         )
         self.assertEqual(str(recipe), recipe.title)
+
+    @patch('uuid.uuid4')
+    def test_recipe_file_name_uuid(self, mock_uuid):
+        """Tests that a recipe image is saved in the correct location, by
+        mocking the Python built-in UUID. The patch decorator defines the
+        UUID function to mock. Anytime the uuid4 is called, this function
+        overrides its behaviour and returns the defined value instead."""
+
+        # Mock the return value.
+        uuid = 'test-uuid'
+        mock_uuid.return_value = uuid
+
+        file_path = models.create_recipe_image_file_path(
+            instance=None,
+            file_name='testimage.jpg'
+        )
+
+        expected_path = f'uploads/recipe/{uuid}.jpg'
+
+        self.assertEqual(file_path, expected_path)

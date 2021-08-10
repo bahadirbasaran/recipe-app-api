@@ -1,7 +1,19 @@
+import os
+import uuid
+
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, \
                                        PermissionsMixin
+
+
+def create_recipe_image_file_path(instance, file_name):
+    """Creates a file path for a new recipe images."""
+
+    file_extension = file_name.split('.')[-1]
+    file_name = f'{uuid.uuid4()}.{file_extension}'
+
+    return os.path.join('uploads/recipe/', file_name)
 
 
 class UserManager(BaseUserManager):
@@ -86,8 +98,12 @@ class Recipe(models.Model):
     time_minutes = models.IntegerField()
     price = models.DecimalField(max_digits=5, decimal_places=2)
 
-    # Set link as an optional field for recipes.
+    # Set link and image as optional fields for recipes.
     link = models.CharField(max_length=255, blank=True)
+    image = models.ImageField(
+        null=True,
+        upload_to=create_recipe_image_file_path
+    )
 
     # Many ingredients and many tags can be assigned to many recipes.
     ingredients = models.ManyToManyField('Ingredient')
