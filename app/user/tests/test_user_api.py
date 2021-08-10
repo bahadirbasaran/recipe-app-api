@@ -171,6 +171,7 @@ class PrivateUserApiTests(TestCase):
         new_credentials = {'name': 'New Name', 'password': 'NewTestpass12'}
         response = self.client.patch(URL_ME, new_credentials)
 
+        # Refresh the details of the user from database.
         self.user.refresh_from_db()
 
         # Check that the update is successful.
