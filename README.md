@@ -24,6 +24,8 @@ You are good to go if you can successfully run:
 docker-compose --version
 ```
 
+
+
 #### To start the project, just run (in the root directory):
 
 ```sh
