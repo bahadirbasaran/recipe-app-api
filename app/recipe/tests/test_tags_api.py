@@ -5,7 +5,7 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from core.models import Tag
+from core.models import Tag, Recipe
 
 from recipe.serializers import TagSerializer
 
@@ -103,3 +103,54 @@ class PrivateTagsApiTests(TestCase):
         response = self.client.post(URL_TAGS, tag_payload)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_retrieve_tags_assigned_to_recipes(self):
+        """Tests filtering tags by those assigned to recipes."""
+
+        # Create two tags, assign one of them to a recipe
+        # while leaving the other one unassigned.
+        tag1 = Tag.objects.create(user=self.user, name='Breakfast')
+        tag2 = Tag.objects.create(user=self.user, name='Lunch')
+
+        recipe = Recipe.objects.create(
+            title='Turkish Omlette with Minced Meat',
+            time_minutes=10,
+            price=5.00,
+            user=self.user
+        )
+        recipe.tags.add(tag1)
+
+        response = self.client.get(URL_TAGS, {'assigned_only': True})
+
+        serializer1 = TagSerializer(tag1)
+        serializer2 = TagSerializer(tag2)
+
+        # The response should only include the tag1.
+        self.assertIn(serializer1.data, response.data)
+        self.assertNotIn(serializer2.data, response.data)
+
+    def test_retrieve_tags_assigned_unique(self):
+        """Tests filtering tags by assigned returns unique items."""
+
+        tag = Tag.objects.create(user=self.user, name='Breakfast')
+        Tag.objects.create(user=self.user, name='Lunch')
+
+        recipe1 = Recipe.objects.create(
+            title='Pancakes',
+            time_minutes=5,
+            price=3.00,
+            user=self.user
+        )
+        recipe2 = Recipe.objects.create(
+            title='Porridge',
+            time_minutes=3,
+            price=1.00,
+            user=self.user
+        )
+
+        recipe1.tags.add(tag)
+        recipe2.tags.add(tag)
+
+        response = self.client.get(URL_TAGS, {'assigned_only': True})
+
+        self.assertEqual(len(response.data), 1)
