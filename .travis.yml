@@ -8,12 +8,14 @@ services:
 before_install:
   - echo $DOCKERHUB_TOKEN | docker login --username $DOCKERHUB_USER --password-stdin
 
+install: pip install coveralls
+
 before_script: >
   pip install docker-compose
 
 script:
   - docker-compose run --rm app sh -c "python manage.py wait_for_db &&
                                        python manage.py test && flake8 &&
-                                       coverage run --source=core manage.py test core"
+                                       coverage run manage.py test"
 
 after_success: coveralls

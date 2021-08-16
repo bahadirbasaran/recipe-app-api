@@ -18,7 +18,6 @@ RUN /usr/local/bin/python -m pip install --upgrade pip
 
 # Install the specified dependencies.
 RUN pip install -r /requirements.txt
-RUN pip install coveralls
 
 # Delete the temporary dependencies after the installation.
 RUN apk del .tmp-build-deps
