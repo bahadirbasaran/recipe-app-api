@@ -53,7 +53,7 @@ class PublicUserAPITests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_password_too_short(self):
-        """Tests that passwordS must be more than five characters."""
+        """Tests that passwords must be more than five characters."""
 
         credentials = {
             'email': 'testuser@gmail.com',
@@ -73,7 +73,7 @@ class PublicUserAPITests(TestCase):
         self.assertEqual(response.data['password'][0].code, 'min_length')
 
     def test_create_token_for_user(self):
-        """Tests that a token is created for a registered user"""
+        """Tests that a token is created for a registered user."""
 
         credentials = {'email': 'testuser@gmail.com', 'password': 'Testpass12'}
         get_user_model().objects.create_user(**credentials)
