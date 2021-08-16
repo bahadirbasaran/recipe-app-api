@@ -11,11 +11,11 @@ URL_TOKEN = reverse('user:token')
 URL_ME = reverse('user:me')
 
 
-class PublicUserApiTests(TestCase):
+class PublicUserAPITests(TestCase):
     """Tests for unauthenticated User API accesses."""
 
     def setUp(self):
-        """SetUp function is run before every test."""
+        """The setUp method is run before every test."""
 
         self.client = APIClient()
 
@@ -29,7 +29,6 @@ class PublicUserApiTests(TestCase):
         }
         response = self.client.post(URL_CREATE_USER, credentials)
 
-        # Check that the response is HTTP 201 CREATED.
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         # Check that the object has actually been created properly.
@@ -40,7 +39,7 @@ class PublicUserApiTests(TestCase):
         self.assertNotIn('password', response.data)
 
     def test_user_existence(self):
-        """Tests the creation of a user that already exists."""
+        """Tests a creation of a user that already exists."""
 
         credentials = {
             'email': 'testuser@gmail.com',
@@ -49,12 +48,12 @@ class PublicUserApiTests(TestCase):
         }
         get_user_model().objects.create_user(**credentials)
 
-        # Check that this is a bad request since the user has already exists.
+        # Check that this is a bad request since the user does already exists.
         response = self.client.post(URL_CREATE_USER, credentials)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_password_too_short(self):
-        """Tests that a password must be more than five characters."""
+        """Tests that passwordS must be more than five characters."""
 
         credentials = {
             'email': 'testuser@gmail.com',
@@ -66,12 +65,11 @@ class PublicUserApiTests(TestCase):
         # Check that this is a bad request since the password was too short.
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-        # Check that user has never been created.
         is_user_created = get_user_model().objects.filter(
             email=credentials['email']
         ).exists()
-        self.assertFalse(is_user_created)
 
+        self.assertFalse(is_user_created)
         self.assertEqual(response.data['password'][0].code, 'min_length')
 
     def test_create_token_for_user(self):
@@ -82,7 +80,7 @@ class PublicUserApiTests(TestCase):
 
         response = self.client.post(URL_TOKEN, credentials)
 
-        # Response should be a HTTP 200 OK, and should contain a token
+        # Check that the response is HTTP 200, and contains a token.
         self.assertIn('token', response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -98,7 +96,7 @@ class PublicUserApiTests(TestCase):
         }
         response = self.client.post(URL_TOKEN, invalid_credentials)
 
-        # Response should be a HTTP 400 BAD REQUEST, and not contain a token
+        # Check that the response is HTTP 400, and does not contain a token.
         self.assertNotIn('token', response.data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -108,17 +106,17 @@ class PublicUserApiTests(TestCase):
         credentials = {'email': 'testuser@gmail.com', 'password': 'Testpass12'}
         response = self.client.post(URL_TOKEN, credentials)
 
-        # Response should be a HTTP 400 BAD REQUEST, and not contain a token
+        # Check that the response is HTTP 400, and does not contain a token.
         self.assertNotIn('token', response.data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_token_missing_field(self):
-        """Tests that e-mail and password are mandatory for creation."""
+        """Tests that email and password are mandatory for creation."""
 
         invalid_credentials = {'email': 'testuser@gmail.com', 'password': ''}
         response = self.client.post(URL_TOKEN, invalid_credentials)
 
-        # Response should be a HTTP 400 BAD REQUEST, and not contain a token
+        # Check that the response is HTTP 400, and does not contain a token.
         self.assertNotIn('token', response.data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -129,11 +127,11 @@ class PublicUserApiTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
-class PrivateUserApiTests(TestCase):
+class PrivateUserAPITests(TestCase):
     """Tests for authenticated User API accesses."""
 
     def setUp(self):
-        """SetUp function is run before every test."""
+        """The setUp method is run before every test."""
 
         credentials = {
             'email': 'testuser@gmail.com',
@@ -146,21 +144,21 @@ class PrivateUserApiTests(TestCase):
         self.client.force_authenticate(user=self.user)
 
     def test_retrieve_profile(self):
-        """Tests retrieving profile of logged in user."""
+        """Tests retrieving profile of a user who has been logged in."""
 
         response = self.client.get(URL_ME)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        # Check that the user object returns as expected. There is no
-        # need (and not secure) to return a password to client side.
+        # Check that the user object returns as expected. There is no need
+        # (and it is not secure) to return a password to client side.
         self.assertEqual(response.data, {
             'name': self.user.name,
             'email': self.user.email
         })
 
     def test_post_me_not_allowed(self):
-        """Tests that POST in not allowed on the me url."""
+        """Tests that POST in not allowed on the URL_ME."""
 
         res = self.client.post(URL_ME)
         self.assertEqual(res.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -171,7 +169,7 @@ class PrivateUserApiTests(TestCase):
         new_credentials = {'name': 'New Name', 'password': 'NewTestpass12'}
         response = self.client.patch(URL_ME, new_credentials)
 
-        # Refresh the details of the user from database.
+        # Refresh the details of the user from the database.
         self.user.refresh_from_db()
 
         # Check that the update is successful.

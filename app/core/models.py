@@ -8,7 +8,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, \
 
 
 def create_recipe_image_file_path(instance, file_name):
-    """Creates a file path for a new recipe images."""
+    """Creates a file path for a new recipe image."""
 
     file_extension = file_name.split('.')[-1]
     file_name = f'{uuid.uuid4()}.{file_extension}'
@@ -17,13 +17,13 @@ def create_recipe_image_file_path(instance, file_name):
 
 
 class UserManager(BaseUserManager):
-    """Class that provides helper functions for creating a user/superuser"""
+    """Class that provides helper functions for creating a user/superuser."""
 
     def create_user(self, email, password=None, **extra_fields):
         """Creates and saves a new user"""
 
         if not email:
-            raise ValueError('Users should have an e-mail address.')
+            raise ValueError('Users should have an email address.')
 
         user = self.model(email=self.normalize_email(email), **extra_fields)
         user.set_password(password)
@@ -38,14 +38,14 @@ class UserManager(BaseUserManager):
         user.is_staff = True
         user.is_superuser = True
 
-        # User has been modified after the creation, should be saved again.
+        # A user who has been modified should be saved again.
         user.save(using=self._db)
 
         return user
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    """Custom user model that supports using email instead of username"""
+    """Custom user model that supports using email instead of username."""
 
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
@@ -53,7 +53,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
 
     objects = UserManager()
-
     USERNAME_FIELD = 'email'
 
 
@@ -62,7 +61,7 @@ class Tag(models.Model):
 
     name = models.CharField(max_length=255)
 
-    # models.CASCADE ensures deletion of the tag when User is deleted.
+    # models.CASCADE ensures deletion of the tag when a user is deleted.
     user = models.ForeignKey(
         to=settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE

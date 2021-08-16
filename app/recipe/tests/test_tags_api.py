@@ -13,11 +13,11 @@ from recipe.serializers import TagSerializer
 URL_TAGS = reverse('recipe:tag-list')
 
 
-class PublicTagsApiTests(TestCase):
+class PublicTagsAPITests(TestCase):
     """Tests for unauthenticated Tag API accesses."""
 
     def setUp(self):
-        """SetUp function is run before every test."""
+        """The setUp method is run before every test."""
 
         self.client = APIClient()
 
@@ -25,17 +25,19 @@ class PublicTagsApiTests(TestCase):
         """Tests that login is required for retrieving tags."""
 
         response = self.client.get(URL_TAGS)
+
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
-class PrivateTagsApiTests(TestCase):
+class PrivateTagsAPITests(TestCase):
     """Tests for authenticated Tag API accesses."""
 
     def setUp(self):
-        """SetUp function is run before every test."""
+        """The setUp method is run before every test."""
 
         credentials = {'email': 'testuser@gmail.com', 'password': 'Testpass12'}
         self.user = get_user_model().objects.create_user(**credentials)
+
         self.client = APIClient()
         self.client.force_authenticate(self.user)
 
@@ -49,10 +51,10 @@ class PrivateTagsApiTests(TestCase):
         response = self.client.get(URL_TAGS)
 
         # Retrieve tags from the database.
-        # Ensure tags are returned in reversed order based on name.
+        # Ensure tags are returned in reverse order based on the name.
         tags = Tag.objects.all().order_by('-name')
 
-        # Create a tag serializer allowing more than one items.
+        # Create a tag serializer allowing more than one item.
         serializer = TagSerializer(tags, many=True)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -61,8 +63,8 @@ class PrivateTagsApiTests(TestCase):
     def test_tags_limited_to_authenticated_user(self):
         """Tests that retrieved tags are limited to authenticated users."""
 
-        # Create a new user addition to the user created in
-        # setup, and leave it without an authentication.
+        # Create a new user in addition to the user created in
+        # the setUp, and leave it without an authentication.
         credentials = {'email': 'newuser@gmail.com', 'password': 'Testpass34'}
         new_user = get_user_model().objects.create_user(**credentials)
 
@@ -74,10 +76,8 @@ class PrivateTagsApiTests(TestCase):
 
         response = self.client.get(URL_TAGS)
 
-        # Check that the response code is HTTP_200_OK
+        # Check that the response is HTTP 200, and includes only one tag.
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # Check that the response includes only one tag.
         self.assertEqual(len(response.data), 1)
 
         # Check that the name of the returned tag matches with the
@@ -85,7 +85,7 @@ class PrivateTagsApiTests(TestCase):
         self.assertEqual(response.data[0]['name'], tag.name)
 
     def test_create_tag(self):
-        """Tests new tag creation."""
+        """Tests a new tag creation."""
 
         tag_payload = {'name': 'Test Tag'}
         self.client.post(URL_TAGS, tag_payload)
@@ -94,6 +94,7 @@ class PrivateTagsApiTests(TestCase):
             user=self.user,
             name=tag_payload['name']
         ).exists()
+
         self.assertTrue(is_tag_created)
 
     def test_create_tag_invalid_payload(self):
@@ -125,7 +126,7 @@ class PrivateTagsApiTests(TestCase):
         serializer1 = TagSerializer(tag1)
         serializer2 = TagSerializer(tag2)
 
-        # The response should only include the tag1.
+        # The response only includes the tag1.
         self.assertIn(serializer1.data, response.data)
         self.assertNotIn(serializer2.data, response.data)
 

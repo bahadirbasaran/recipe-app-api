@@ -6,7 +6,7 @@ from recipe import views
 
 
 # DefaultRouter automatically registers appropriate
-# URLs for all actions in ViewSet.
+# URLs for all actions in the ViewSet.
 router = DefaultRouter()
 
 # Register the view sets with the router.

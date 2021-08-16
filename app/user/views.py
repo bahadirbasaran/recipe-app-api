@@ -7,8 +7,8 @@ from user.serializers import UserSerializer, AuthTokenSerializer
 
 class CreateUserView(generics.CreateAPIView):
     """User creation view that points to the serializer
-    class that are used to create the object."""
-
+    class that are used to create the object.
+    """
     serializer_class = UserSerializer
 
 
@@ -31,7 +31,7 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         """Overridden to return the user that has been authenticated.
-        When it is called, request will have the user attached to it
-        because of the authentication_classes."""
-
+        When it is called, request will have a user attached to it
+        because of the authentication_classes.
+        """
         return self.request.user

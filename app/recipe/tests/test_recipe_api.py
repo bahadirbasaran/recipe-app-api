@@ -56,11 +56,11 @@ def create_sample_recipe(user, **parameters):
     return Recipe.objects.create(user=user, **default_parameters)
 
 
-class PublicRecipeApiTests(TestCase):
+class PublicRecipeAPITests(TestCase):
     """Tests for unauthenticated recipe API accesses."""
 
     def setUp(self):
-        """SetUp function is run before every test."""
+        """The setUp method is run before every test."""
 
         self.client = APIClient()
 
@@ -73,14 +73,15 @@ class PublicRecipeApiTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
-class PrivateRecipeApiTests(TestCase):
+class PrivateRecipeAPITests(TestCase):
     """Tests for authenticated recipe API accesses."""
 
     def setUp(self):
-        """SetUp function is run before every test."""
+        """The setUp method is run before every test."""
 
         credentials = {'email': 'testuser@gmail.com', 'password': 'Testpass12'}
         self.user = get_user_model().objects.create_user(**credentials)
+
         self.client = APIClient()
         self.client.force_authenticate(self.user)
 
@@ -95,7 +96,7 @@ class PrivateRecipeApiTests(TestCase):
         response = self.client.get(URL_RECIPES)
 
         # Retrieve recipes from the database.
-        # Ensure ingredients are returned in reversed order based on id.
+        # Ensure ingredients are returned in reverse order based on the ID.
         recipes = Recipe.objects.all().order_by('-id')
 
         # Create a recipe serializer allowing more than one items.
@@ -107,8 +108,8 @@ class PrivateRecipeApiTests(TestCase):
     def test_recipes_limited_to_authenticated_user(self):
         """Tests that retrieved recipes are limited to authenticated users."""
 
-        # Create a new user addition to the user created in
-        # setup, and leave it without an authentication.
+        # Create a new user in addition to the user created in
+        # the setUp, and leave it without an authentication.
         credentials = {'email': 'newuser@gmail.com', 'password': 'Testpass34'}
         new_user = get_user_model().objects.create_user(**credentials)
 
@@ -126,10 +127,8 @@ class PrivateRecipeApiTests(TestCase):
         # Create a recipe serializer allowing more than one items.
         serializer = RecipeSerializer(recipes, many=True)
 
-        # Check that the response code is HTTP_200_OK
+        # Check that the response is HTTP 200, and includes only 1 recipe.
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # Check that the response includes only one recipe.
         self.assertEqual(len(response.data), 1)
 
         # Check that the data returned is the same as the serializer.
@@ -166,7 +165,7 @@ class PrivateRecipeApiTests(TestCase):
         # Retrieve the created recipe from the models.
         recipe = Recipe.objects.get(id=response.data['id'])
 
-        # Check that the correct values has been assigned to the recipe.
+        # Check that the correct values have been assigned to the recipe.
         for key in recipe_payload.keys():
             self.assertEqual(recipe_payload[key], getattr(recipe, key))
 
@@ -241,7 +240,7 @@ class PrivateRecipeApiTests(TestCase):
         # Update the recipe partially using patch.
         self.client.patch(url, recipe_payload)
 
-        # Refresh the details of the recipe from database.
+        # Refresh the details of the recipe from the database.
         recipe.refresh_from_db()
 
         # Check that the update was successful.
@@ -269,7 +268,7 @@ class PrivateRecipeApiTests(TestCase):
         # Update the recipe fully using put.
         self.client.put(url, recipe_payload)
 
-        # Refresh the details of the recipe from database.
+        # Refresh the details of the recipe from the database.
         recipe.refresh_from_db()
 
         # Check that the update was successful.
@@ -283,20 +282,22 @@ class PrivateRecipeApiTests(TestCase):
         self.assertEqual(len(tags), 0)
 
 
-class RecipeImageUploadApiTests(TestCase):
+class RecipeImageUploadAPITests(TestCase):
     """Tests for recipe image upload API accesses."""
 
     def setUp(self):
-        """SetUp function is run before every test."""
+        """The setUp method is run before every test."""
 
         credentials = {'email': 'testuser@gmail.com', 'password': 'Testpass12'}
         self.user = get_user_model().objects.create_user(**credentials)
+
         self.client = APIClient()
         self.client.force_authenticate(self.user)
+
         self.recipe = create_sample_recipe(user=self.user)
 
     def tearDown(self):
-        """tearDown function is run after every test."""
+        """The tearDown method is run after every test."""
 
         self.recipe.image.delete()
 
@@ -319,7 +320,7 @@ class RecipeImageUploadApiTests(TestCase):
                 format='multipart'
             )
 
-        # Refresh the details of the recipe from database.
+        # Refresh the details of the recipe from the database.
         self.recipe.refresh_from_db()
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -339,7 +340,7 @@ class RecipeImageUploadApiTests(TestCase):
     def test_filter_recipes_by_tags(self):
         """Tests filtering recipes by specific tags."""
 
-        # Create sample recipes and tags.
+        # Create sample recipes.
         recipe1 = create_sample_recipe(user=self.user, title='Thai Curry')
         recipe2 = create_sample_recipe(user=self.user, title='Lime Cheesecake')
         recipe3 = create_sample_recipe(user=self.user, title='Fish and Chips')
@@ -352,7 +353,7 @@ class RecipeImageUploadApiTests(TestCase):
         recipe1.tags.add(tag1)
         recipe2.tags.add(tag2)
 
-        # Respons should only include the first two recipes.
+        # The response should only include the first two recipes.
         response = self.client.get(
             URL_RECIPES,
             {'tags': f'{tag1.id},{tag2.id}'}
@@ -382,7 +383,7 @@ class RecipeImageUploadApiTests(TestCase):
         recipe1.ingredients.add(ingredient1)
         recipe2.ingredients.add(ingredient2)
 
-        # Respons should only include the first two recipes.
+        # The response should only include the first two recipes.
         response = self.client.get(
             URL_RECIPES,
             {'ingredients': f'{ingredient1.id},{ingredient2.id}'}

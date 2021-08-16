@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import gettext as _
+
 from core import models
 
 
@@ -20,6 +21,7 @@ class UserAdmin(BaseUserAdmin):
         ),
         (_('Important Dates'), {'fields': ('last_login',)})
     )
+
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
@@ -28,9 +30,9 @@ class UserAdmin(BaseUserAdmin):
     )
 
 
-# Django-admin rovides a web interface for performing CRUD actions on models
-# by default. In case of adding new/custom models like the User model here,
-# they should be registered to be accessible thorough the admin site.
+# Django-admin provides a web interface for performing CRUD actions on
+# models by default. In adding new models like the User model here,
+# they should be registered to be accessible through the admin site.
 admin.site.register(models.User, UserAdmin)
 admin.site.register(models.Tag)
 admin.site.register(models.Ingredient)

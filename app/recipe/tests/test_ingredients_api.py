@@ -13,11 +13,11 @@ from recipe.serializers import IngredientSerializer
 URL_INGREDIENTS = reverse('recipe:ingredient-list')
 
 
-class PublicIngredientsApiTests(TestCase):
+class PublicIngredientsAPITests(TestCase):
     """Tests for unauthenticated Ingredients API accesses."""
 
     def setUp(self):
-        """SetUp function is run before every test."""
+        """The setUp method is run before every test."""
 
         self.client = APIClient()
 
@@ -30,11 +30,11 @@ class PublicIngredientsApiTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
-class PrivateIngredientsApiTests(TestCase):
+class PrivateIngredientsAPITests(TestCase):
     """Tests for authenticated Ingredients API accesses."""
 
     def setUp(self):
-        """SetUp function is run before every test."""
+        """The setUp method is run before every test."""
 
         credentials = {'email': 'testuser@gmail.com', 'password': 'Testpass12'}
         self.user = get_user_model().objects.create_user(**credentials)
@@ -51,21 +51,20 @@ class PrivateIngredientsApiTests(TestCase):
         response = self.client.get(URL_INGREDIENTS)
 
         # Retrieve ingredients from the database.
-        # Ensure ingredients are returned in reversed order based on name.
+        # Ensure ingredients are returned in reverse order based on the name.
         ingredients = Ingredient.objects.all().order_by('-name')
 
-        # Create an ingredient serializer allowing more than one items.
+        # Create an ingredient serializer allowing more than one item.
         serializer = IngredientSerializer(ingredients, many=True)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, serializer.data)
 
     def test_ingredients_limited_to_authenticated_user(self):
-        """Tests that retrieved ingredients are
-        limited to authenticated users."""
+        """Tests that ingredients are limited to authenticated users."""
 
         # Create a new user addition to the user created in
-        # setup, and leave it without an authentication.
+        # the setUp, and leave it without an authentication.
         credentials = {'email': 'newuser@gmail.com', 'password': 'Testpass34'}
         new_user = get_user_model().objects.create_user(**credentials)
 
@@ -77,10 +76,8 @@ class PrivateIngredientsApiTests(TestCase):
 
         response = self.client.get(URL_INGREDIENTS)
 
-        # Check that the response code is HTTP_200_OK
+        # Check that the response is HTTP 200, and includes one ingredient.
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # Check that the response includes only one ingredient.
         self.assertEqual(len(response.data), 1)
 
         # Check that the name of the returned ingredient matches with the
@@ -97,6 +94,7 @@ class PrivateIngredientsApiTests(TestCase):
             user=self.user,
             name=ingredient_payload['name']
         ).exists()
+
         self.assertTrue(is_ingredient_created)
 
     def test_create_ingredient_invalid_payload(self):
@@ -150,7 +148,6 @@ class PrivateIngredientsApiTests(TestCase):
             price=5.00,
             user=self.user
         )
-
         recipe1.ingredients.add(ingredient)
         recipe2.ingredients.add(ingredient)
 

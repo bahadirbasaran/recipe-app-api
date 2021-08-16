@@ -15,15 +15,13 @@ class RecipeAttributesViewSet(viewsets.GenericViewSet,
     """Base ViewSet for user owned recipe attributes."""
 
     authentication_classes = (TokenAuthentication,)
-
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         """Overrides the get_queryset function to return objects
-        (ordered by name) for authenticated users only."""
-
+        (ordered by name) for authenticated users only.
+        """
         assigned_only = self.request.query_params.get('assigned_only', False)
-
         queryset = self.queryset
 
         if assigned_only:
@@ -43,7 +41,6 @@ class TagViewSet(RecipeAttributesViewSet):
     """Manages tags in the database."""
 
     queryset = Tag.objects.all()
-
     serializer_class = serializers.TagSerializer
 
 
@@ -51,7 +48,6 @@ class IngredientViewSet(RecipeAttributesViewSet):
     """Manages ingredients in the database."""
 
     queryset = Ingredient.objects.all()
-
     serializer_class = serializers.IngredientSerializer
 
 
@@ -59,11 +55,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     """Manages recipes in the database."""
 
     queryset = Recipe.objects.all()
-
     serializer_class = serializers.RecipeSerializer
-
     authentication_classes = (TokenAuthentication,)
-
     permission_classes = (IsAuthenticated,)
 
     def _params_to_ints(self, str_IDs):
@@ -90,11 +83,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return queryset.filter(user=self.request.user).order_by('-id')
 
     def get_serializer_class(self):
-        """Returs appropriate serializer class."""
+        """Returs an appropriate serializer class."""
 
         if self.action == 'retrieve':
             return serializers.RecipeDetailSerializer
-
         elif self.action == 'upload_image':
             return serializers.RecipeImageSerializer
 

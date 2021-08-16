@@ -24,12 +24,12 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         """Creates a new user with an encrypted password and returns it.
         Overridden to use the create_user in the User model to ensure passwords
-        to be encrypted. validated_data is a JSON from an HTTP POST"""
-
+        to be encrypted. validated_data is a JSON object from an HTTP POST.
+        """
         return get_user_model().objects.create_user(**validated_data)
 
     def update(self, instance, validated_data):
-        """Updates a user by setting the password correctly, and returns it."""
+        """Updates and returns a user by setting the password correctly."""
 
         # Remove and retrieve password from validated_data. The default value
         # is set to None, since setting a password is optional in this design.
@@ -37,7 +37,7 @@ class UserSerializer(serializers.ModelSerializer):
 
         user = super().update(instance, validated_data)
 
-        # If user has provided a password, set the password and save the user.
+        # If user provides a password, set the password and save the user.
         if password:
             user.set_password(password)
             user.save()
@@ -55,7 +55,7 @@ class AuthTokenSerializer(serializers.Serializer):
     )
 
     def validate(self, credentials):
-        """Validate and authenticate users."""
+        """Validates and authenticates users."""
 
         user = authenticate(
             request=self.context.get('request'),
