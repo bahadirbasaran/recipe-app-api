@@ -8,10 +8,6 @@ services:
 before_install:
   - echo $DOCKERHUB_TOKEN | docker login --username $DOCKERHUB_USER --password-stdin
 
-install:
-  - pip install coverage 
-  - pip install coveralls
-
 before_script: >
   pip install docker-compose
 
