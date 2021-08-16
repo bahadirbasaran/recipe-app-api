@@ -10,11 +10,11 @@ services:
             - "8000:8000"
         volumes:
             # Map the app directory to /app directory in the Docker image. Changes in
-            # the local app directory will be automatically updated in the container.
+            # local app directory will be automatically updated in the container.
             - ./app:/app
         command: 
-            # Waiting for a database connection, then database migration to create any
-            # data (table etc.) that are required for the app, and then running the app. 
+            # Wait for the database connection, then make database migration to create any
+            # data (table etc.) that are required for the app, and then run the app. 
             >
             sh -c "python manage.py wait_for_db &&
                    python manage.py migrate &&

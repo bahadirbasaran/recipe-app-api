@@ -18,8 +18,9 @@ RUN /usr/local/bin/python -m pip install --upgrade pip
 
 # Install the specified dependencies.
 RUN pip install -r /requirements.txt
+RUN pip install coveralls
 
-# Delete the temproray dependencies after the installation.
+# Delete the temporary dependencies after the installation.
 RUN apk del .tmp-build-deps
 
 # Create a directory inside the image to store the application source code,
@@ -30,7 +31,7 @@ COPY ./app /app
 
 # Create the directory vol to store:
 # - media (images uploaded by users) that can be shared with other containers.
-# - static data (JS, css files etc.)
+# - static data (JS, CSS files etc.)
 RUN mkdir -p /vol/web/media
 RUN mkdir -p /vol/web/static
 
