@@ -1,5 +1,5 @@
 # recipe-app-api&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Build Status](https://www.travis-ci.com/bahadirbasaran/recipe-app-api.svg?branch=main)](https://www.travis-ci.com/github/bahadirbasaran/recipe-app-api)
-### django Backend REST API for Recipe-based Applications
+### django Back-end REST API for Recipe Applications
 
 The capabilities of this API, which was developed by following the Test-driven Development methodology and has 100% test coverage, are as follows:
 - Creating and updating users
@@ -16,6 +16,7 @@ The capabilities of this API, which was developed by following the Test-driven D
 
 macOS and Windows users can install Docker Desktop which contains both Docker and Docker-Compose tools.
 Linux users need to follow the instructions on Get Docker CE for Ubuntu and then Install Docker Compose separately.
+
 You are good to go if you can successfully run:
 ```sh
 docker-compose --version
