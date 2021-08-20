@@ -1,7 +1,7 @@
 # recipe-app-api&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![Build Status](https://www.travis-ci.com/bahadirbasaran/recipe-app-api.svg?branch=main)](https://www.travis-ci.com/github/bahadirbasaran/recipe-app-api)
 ### django Back-end REST API for Recipe Applications
 
-The capabilities of this API, which was developed by following the Test-driven Development methodology and has 100% test coverage, are as follows:
+The capabilities of this API, developed by following the Test-driven Development Methodology and has 100% test coverage, are as follows:
 - Creating and updating users
 - User authentication
 - Creating and updating recipes
